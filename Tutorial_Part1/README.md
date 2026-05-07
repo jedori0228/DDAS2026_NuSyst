@@ -15,6 +15,8 @@ DDAS_ToolConfig:{
   # Some name
   instance_name: "NuSystTutorial"
 
+  # Central value
+  DIALNAME_central_value: 0
   # List of variations (e.g., X-sigma)
   # - DIALNAME_variation_descriptor: "(START_VALUE, END_VALUE, STEP)"
   # - DIALNAME_variation_descriptor: "[VALUE_0, VALUE_1, VALUE_2, ...]"
@@ -33,3 +35,39 @@ syst_providers: [
 
 You can then run `GenerateSystProviderConfigNuSyst -c <ToolConfig FHICL file> -o <Output name for the ParameterHeader FHICL file>` to convert the ToolConfig file into a ParameterHeader file
 
+Each systprovider module contains a member function `BuildSystMetaData` that should be defined by the module developer, which parses the ToolConfig contents. 
+
+You may have noticed following line printed from `GenerateSystProviderConfigNuSyst`:
+```
+[DUNEDAS2026ExampleReweighter::BuildSystMetaData] Called
+[DUNEDAS2026ExampleReweighter::BuildSystMetaData] No dial is set
+```
+Let's see what we have in BuildSystMetaData; https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L23-L47$0
+```
+SystMetaData DUNEDAS2026ExampleReweighter::BuildSystMetaData(ParameterSet const &cfg,
+                                                     paramId_t firstId) {
+
+  std::cout << "[DUNEDAS2026ExampleReweighter::BuildSystMetaData] Called" << std::endl;
+
+  SystMetaData smd;
+
+  // Name of the dials that are supported by this module
+  std::vector<std::string> AvailPNames = {"DialA", "DialB"};
+
+  // Loop over available names and check if they are specified in ToolConfig
+  for(std::string const &pname: AvailPNames){
+    systtools::SystParamHeader phdr;
+    if (ParseFhiclToolConfigurationParameter(cfg, pname, phdr, firstId)) {
+      printf("[DUNEDAS2026ExampleReweighter::BuildSystMetaData] %s is found from ToolConfig\n", pname.c_str());
+      phdr.systParamId = firstId++;
+      smd.push_back(phdr);
+    }
+  }
+  if(smd.size()==0){
+    std::cout << "[DUNEDAS2026ExampleReweighter::BuildSystMetaData] No dial is set" << std::endl;
+  }
+...
+```
+As you can see, this module supports {"DialA", "DialB"}, but we have `DIALNAME` in current ToolConfig file.
+ 
+## :pencil2: Exercise 1-1
