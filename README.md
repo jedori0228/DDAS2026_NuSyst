@@ -12,10 +12,13 @@ export nusystwd=`pwd`
 # To use UPS
 source /cvmfs/icarus.opensciencegrid.org/products/icarus/setup_icarus.sh
 
+# Dependencies
 setup cmake v3_27_4
 setup genie v3_04_02 -qe26:prof
 setup genie_xsec   v3_04_00 -q AR2320i00000:e1000:k250
 setup boost v1_82_0 -qe26:prof
+setup eigen v23_08_01_66e8f
+setup fhiclcpp v4_18_04 -qe26:prof
 ```
 
 # Installing nusystematics package
@@ -41,7 +44,6 @@ The package is installed in `nusystematics-build/Linux`.
 Again in every new terminal session, you need to run following bash scripts
 ```
 cd ${nusystwd}
-source ${nusystwd}/nusystematics-build/Linux/bin/setup.fhicl_cpp_standalone.sh
 source ${nusystwd}/nusystematics-build/Linux/bin/setup.systematicstools.sh
 source ${nusystwd}/nusystematics-build/Linux/bin/setup.nusystematics.sh
 ```
