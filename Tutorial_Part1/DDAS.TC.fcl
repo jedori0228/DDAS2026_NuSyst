@@ -6,12 +6,22 @@ DDAS_ToolConfig:{
   # Some name
   instance_name: "NuSystTutorial"
 
+  #------ DDAS Exercise 1-1 START
+
   # Central value
   DIALNAME_central_value: 0
   # List of variations (e.g., X-sigma)
   # - DIALNAME_variation_descriptor: "(START_VALUE, END_VALUE, STEP)"
   # - DIALNAME_variation_descriptor: "[VALUE_0, VALUE_1, VALUE_2, ...]"
-  DIALNAME_variation_descriptor: "[-1, +1]"
+  DIALNAME_variation_descriptor: "[+3]"
+
+  #------ DDAS Exercise 1-1 END
+
+  OPT_STRING: "A string can be transferred to ParameterHeader"
+  OPT_BOOL: false
+  OPT_PSET:{
+    OPT_PSET_STRING: "A string inside OPT_PSET"
+  }
 
 }
 
