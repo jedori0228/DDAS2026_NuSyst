@@ -20,7 +20,7 @@ DDAS_ToolConfig:{
   # List of variations (e.g., X-sigma)
   # - DIALNAME_variation_descriptor: "(START_VALUE, END_VALUE, STEP)"
   # - DIALNAME_variation_descriptor: "[VALUE_0, VALUE_1, VALUE_2, ...]"
-  DIALNAME_variation_descriptor: "[-1, +1]"
+  DIALNAME_variation_descriptor: "[+3]"
 
 }
 
@@ -71,3 +71,36 @@ SystMetaData DUNEDAS2026ExampleReweighter::BuildSystMetaData(ParameterSet const 
 As you can see, this module supports {"DialA", "DialB"}, but we have `DIALNAME` in current ToolConfig file.
  
 ## :pencil2: Exercise 1-1
+
+Update "DDAS.TC.fcl" and genearate a ParameterHeader file for following purpose:
+1. DialA
+  1. Central value: 0
+  1. We want reweights for -1 and +1 sigmas
+1. DialB
+  1. Central value: 0
+  1. We want reweights for -1 and +1 sigmas
+
+If you see
+```
+[DUNEDAS2026ExampleReweighter::BuildSystMetaData] Called
+[DUNEDAS2026ExampleReweighter::BuildSystMetaData] DialA is found from ToolConfig
+[DUNEDAS2026ExampleReweighter::BuildSystMetaData] DialB is found from ToolConfig
+```
+, you are good!
+
+# Running NuSystematics
+
+We now have ParamterHeader file, so we can run NuSystematics. Various downstream packages (CAFMaker, Fitter, etc..) can be used, but NuSystematics provides a simple TreeMaker; "DumpConfiguredTweaksNuSyst":
+```
+DumpConfiguredTweaksNuSyst -c DDAS.PH.fcl \
+-i <Input ROOT file that contains GENIE tree> \
+-o NuSystTree.root \
+```
+The output ROOT file contains two TTrees;
+- "events": Event tree
+- "tweak_metadata": Metadata contains dial information
+
+# Analyzing NuSyst TreeMaker
+
+Let's go to [NuSystTreeAna.ipynb][NuSystTreeAna.ipynb]
+
