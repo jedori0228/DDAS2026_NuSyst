@@ -102,5 +102,5 @@ The output ROOT file contains two TTrees;
 
 # Analyzing NuSyst TreeMaker
 
-Let's go to [NuSystTreeAna.ipynb][NuSystTreeAna.ipynb]
+Let's go to [NuSystTreeAna.ipynb](NuSystTreeAna.ipynb)
 
