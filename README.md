@@ -12,16 +12,10 @@ export nusystwd=`pwd`
 # To use UPS
 source /cvmfs/icarus.opensciencegrid.org/products/icarus/setup_icarus.sh
 
-# cmake
-setup cmake v3_21_4
-
-# for fhicl
-setup boost v1_80_0 -q e20:prof
-
-# GENIE
-setup genie v3_04_00 -q e20:prof
-# GENIE cross section for AR23_20i tune
-setup genie_xsec v3_04_00 -q AR2320i00000:e1000:k250
+setup cmake v3_27_4
+setup genie v3_04_02 -qe26:prof
+setup genie_xsec   v3_04_00 -q AR2320i00000:e1000:k250
+setup boost v1_82_0 -qe26:prof
 ```
 
 # Installing nusystematics package
