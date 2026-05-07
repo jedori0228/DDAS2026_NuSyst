@@ -42,7 +42,7 @@ You may have noticed following line printed from `GenerateSystProviderConfigNuSy
 [DUNEDAS2026ExampleReweighter::BuildSystMetaData] Called
 [DUNEDAS2026ExampleReweighter::BuildSystMetaData] No dial is set
 ```
-Let's see what we have in BuildSystMetaData; https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L23-L47$0
+Let's see what we have in BuildSystMetaData; [DUNEDAS2026ExampleReweighter_tool.cc](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L23-L47$0)
 ```
 SystMetaData DUNEDAS2026ExampleReweighter::BuildSystMetaData(ParameterSet const &cfg,
                                                      paramId_t firstId) {
@@ -75,10 +75,10 @@ As you can see, this module supports {"DialA", "DialB"}, but we have `DIALNAME` 
 Update "DDAS.TC.fcl" and genearate a ParameterHeader file for following purpose:
 1. DialA
   1. Central value: 0
-  1. We want reweights for -1 and +1 sigmas
+  1. We want reweights for -1, 0, +1 sigmas
 1. DialB
   1. Central value: 0
-  1. We want reweights for -1 and +1 sigmas
+  1. We want reweights for -1 , 0, +1 sigmas
 
 If you see
 ```
@@ -102,5 +102,75 @@ The output ROOT file contains two TTrees;
 
 # Analyzing NuSyst TreeMaker
 
-Let's go to [NuSystTreeAna.ipynb](NuSystTreeAna.ipynb)
+Go to [NuSystTreeAna.ipynb](NuSystTreeAna.ipynb)
 
+# Developing a systematics with NuSystematics
+
+## Reweighting to a model with different axial form factor
+
+Let's assume we have an alternative axial form factor model that predicts different cross section as a function Q2:
+
+![image](RWExample_Ratio.png)
+
+We will update the behavior of DialA so that it returns a reweight that satisfies following conditions:
+
+1. We want to define this systematics so that a "+1 sigma" variation converts our CV to this alternative model.
+  1. RW(+1) = 1 + R
+1. Any other X-sigma variation is an inter/extra-polation
+  1. RW(sigma) = 1 + sigma*R
+1. We want to design this as a linear function in Q2
+  1. (1+R) at Q2=0 GeV2: 1.0
+  1. (1+R) at Q2=2 GeV2: 2.0
+
+## Dive into systprovider
+
+Now, let's see where we should implement this.
+
+In each systprovider, `GetEventResponse(genie::EventRecord const &ev)` function should be defined.
+This is the function that is called for each GENIE EventRecord, and outputs the reweight object.
+
+In the [first block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L88-L95$0), we use the event variables to calculate the kinematic variables we want to use to calcualte reweights.
+
+- ISLepP4: "I"nitial "S"tate "Lep"ton four-momentum (P4)
+  - In a charged-current neutrino interaction, this is for the neutrino
+- FSLepP4: "F"inal "S"tate "Lep"ton four-momentum (P4)
+  - In a charged-current neutrino interaction, this is for electron/muon/tau
+
+## :pencil2: Exercise 1-2
+
+Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event, and assign the value to `Q2`.
+
+---
+
+In the [next block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L102-L120$0), we
+1. Check whether a dial is activated
+1. If so, for each dial, loop over its variations, evaluate the reweight, and store it to the output reweight object
+
+As you can see, `GetReweight_DialA(Q2, var)` is the function that evaluates the reweight for a given `Q2` and a given variation (`var`).
+It is recommended to define all these "calculators" under `src/nusystematics/responsecalculators`.
+
+## :pencil2: Exercise 1-3
+
+Implement our "dial design" into `GetReweight_DialA` function:
+[DUNEDAS2026ExampleReweighter_calculator.hh](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/responsecalculators/DUNEDAS2026ExampleReweighter_calculator.hh#L10-L14$0)
+
+## Compile and test
+
+You need to compile nusystematics after making our changes.
+Go inside `nusystematics-build` directory, and run `make install`.
+
+Then remake the NuSystTree, and validate the dial!
+
+Go to [DialValidation.ipynb](DialValidation.ipynb)
+
+# Homework
+
+In DialA, we used a linear function.
+It is sometimes not easy to parametrize the ratio of the two models.
+We then use the ratio histogram as a "template" and use (`TH1::GetBinContent` or some kind of inter/extra-polation) it to evaluate the reweight.
+
+The ratio histogram is saved in [Ratio.root](Ratio.root).
+Update the behavior of "DialB" to:
+1. Use the template histogram
+1. For a given Q2, find the bin that Q2 falls in, and use the BinContent of the bin as the reweight. (Hint: `TH1::FindBin()` and `TH1::GetBinContent`)
+1. The path of the ratio rootfile and the histogram name can be configured using the "tool_option" in the fhicl file (e.g., `OPT_STRING` or `OPT_PSET`)
