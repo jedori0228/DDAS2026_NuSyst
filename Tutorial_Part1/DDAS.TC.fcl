@@ -1,0 +1,22 @@
+DDAS_ToolConfig:{
+
+  # Name of the systprovider
+  tool_type: "DUNEDAS2026ExampleReweighter"
+
+  # Some name
+  instance_name: "NuSystTutorial"
+
+  # Central value
+  DIALNAME_central_value: 0
+  # List of variations (e.g., X-sigma)
+  # - DIALNAME_variation_descriptor: "(START_VALUE, END_VALUE, STEP)"
+  # - DIALNAME_variation_descriptor: "[VALUE_0, VALUE_1, VALUE_2, ...]"
+  DIALNAME_variation_descriptor: "[-1, +1]"
+
+}
+
+# You can include multiple ToolConfig block in a single file
+# At the end, make a list out of them
+syst_providers: [
+  DDAS_ToolConfig
+]
