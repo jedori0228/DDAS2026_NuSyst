@@ -69,7 +69,7 @@ $ DumpConfiguredTweaksNuSyst
 ```
 
 # Part 1
-Here we will run what NuSystematics package is
+Here we will learn about the NuSystematics package.
 
 # Part 2
-Here we will transfer the systematic reweights to the CAFs we used in the previous session
+Here we will transfer the systematic reweights to the CAFs we used in the previous session.
