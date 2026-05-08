@@ -5,7 +5,7 @@ A FHICL file ("ParameterHeader") is used to initiate nusystematics weight provid
 
 ## ToolConfig file
 
-An example of a ToolConfig file is written as "DDAS.TC.fcl":
+An example of a ToolConfig file is provided in [DDAS.TC.fcl](DDAS.TC.fcl):
 ```
 DDAS_ToolConfig:{
 
@@ -15,12 +15,22 @@ DDAS_ToolConfig:{
   # Some name
   instance_name: "NuSystTutorial"
 
+  #------ DDAS Exercise 1-1 START
+
   # Central value
   DIALNAME_central_value: 0
   # List of variations (e.g., X-sigma)
   # - DIALNAME_variation_descriptor: "(START_VALUE, END_VALUE, STEP)"
   # - DIALNAME_variation_descriptor: "[VALUE_0, VALUE_1, VALUE_2, ...]"
   DIALNAME_variation_descriptor: "[+3]"
+
+  #------ DDAS Exercise 1-1 END
+
+  OPT_STRING: "A string can be transferred to ParameterHeader"
+  OPT_BOOL: false
+  OPT_PSET:{
+    OPT_PSET_STRING: "A string inside OPT_PSET"
+  }
 
 }
 
@@ -42,7 +52,7 @@ You may have noticed following line printed from `GenerateSystProviderConfigNuSy
 [DUNEDAS2026ExampleReweighter::BuildSystMetaData] Called
 [DUNEDAS2026ExampleReweighter::BuildSystMetaData] No dial is set
 ```
-Let's see what we have in BuildSystMetaData; [DUNEDAS2026ExampleReweighter_tool.cc](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L23-L47$0)
+Let's see what we have in BuildSystMetaData; [DUNEDAS2026ExampleReweighter_tool.cc](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L23-L61)
 ```
 SystMetaData DUNEDAS2026ExampleReweighter::BuildSystMetaData(ParameterSet const &cfg,
                                                      paramId_t firstId) {
@@ -74,11 +84,11 @@ As you can see, this module supports {"DialA", "DialB"}, but we have `DIALNAME` 
 
 Update "DDAS.TC.fcl" and genearate a ParameterHeader file for following purpose:
 1. DialA
-  1. Central value: 0
-  1. We want reweights for -1, 0, +1 sigmas
+   1. Central value: 0
+   1. We want reweights for -1, 0, +1 sigmas
 1. DialB
-  1. Central value: 0
-  1. We want reweights for -1 , 0, +1 sigmas
+   1. Central value: 0
+   1. We want reweights for -1 , 0, +1 sigmas
 
 If you see
 ```
@@ -115,12 +125,12 @@ Let's assume we have an alternative axial form factor model that predicts differ
 We will update the behavior of DialA so that it returns a reweight that satisfies following conditions:
 
 1. We want to define this systematics so that a "+1 sigma" variation converts our CV to this alternative model.
-  1. RW(+1) = 1 + R
+   1. RW(+1) = 1 + R
 1. Any other X-sigma variation is an inter/extra-polation
-  1. RW(sigma) = 1 + sigma*R
+   1. RW(sigma) = 1 + sigma*R
 1. We want to design this as a linear function in Q2
-  1. (1+R) at Q2=0 GeV2: 1.0
-  1. (1+R) at Q2=2 GeV2: 2.0
+   1. (1+R) at Q2=0 GeV2: 1.0
+   1. (1+R) at Q2=2 GeV2: 2.0
 
 ## Dive into systprovider
 
@@ -129,7 +139,7 @@ Now, let's see where we should implement this.
 In each systprovider, `GetEventResponse(genie::EventRecord const &ev)` function should be defined.
 This is the function that is called for each GENIE EventRecord, and outputs the reweight object.
 
-In the [first block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L88-L95$0), we use the event variables to calculate the kinematic variables we want to use to calcualte reweights.
+In the [first block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L94-L101), we use the event variables to calculate the kinematic variables we want to use to calcualte reweights.
 
 - ISLepP4: "I"nitial "S"tate "Lep"ton four-momentum (P4)
   - In a charged-current neutrino interaction, this is for the neutrino
@@ -142,7 +152,7 @@ Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event, and assign the va
 
 ---
 
-In the [next block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L102-L120$0), we
+In the [next block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L103-L124), we
 1. Check whether a dial is activated
 1. If so, for each dial, loop over its variations, evaluate the reweight, and store it to the output reweight object
 
