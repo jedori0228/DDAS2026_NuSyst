@@ -173,7 +173,7 @@ Then remake the NuSystTree, and validate the dial!
 
 Go to [DialValidation.ipynb](DialValidation.ipynb)
 
-# Homework
+# :house::construction_worker: Homework
 
 In DialA, we used a linear function.
 It is sometimes not easy to parametrize the ratio of the two models.
@@ -181,6 +181,12 @@ We then use the ratio histogram as a "template" and use (`TH1::GetBinContent` or
 
 The ratio histogram is saved in [Ratio.root](Ratio.root).
 Update the behavior of "DialB" to:
-1. Use the template histogram
-1. For a given Q2, find the bin that Q2 falls in, and use the BinContent of the bin as the reweight. (Hint: `TH1::FindBin()` and `TH1::GetBinContent`)
-1. The path of the ratio rootfile and the histogram name can be configured using the "tool_option" in the fhicl file (e.g., `OPT_STRING` or `OPT_PSET`)
+1. Use the template histogram.
+1. For a given Q2, find the bin that Q2 falls in, and use the BinContent of the bin as the reweight.
+1. The path of the ratio rootfile and the histogram name can be configured using the "tool_option" in the fhicl file:
+```
+  OPT_PSET:{
+    ROOTFileName: "/path/to/ROOTFILE.root"
+    HistName: "HistogramName"
+  }
+```
