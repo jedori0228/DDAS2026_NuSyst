@@ -116,9 +116,9 @@ Go to [NuSystTreeAna.ipynb](NuSystTreeAna.ipynb)
 
 # Developing a systematics with NuSystematics
 
-## Reweighting to a model with different axial form factor
+## Reweighting to a model with different CCQE axial form factor
 
-Let's assume we have an alternative axial form factor model that predicts different cross section as a function Q2:
+Let's assume we have an alternative charged-current (CC) quasi-elastic (QE) axial form factor model that predicts different cross section as a function Q2:
 
 ![image](RWExample_Ratio.png)
 
@@ -134,35 +134,102 @@ We will update the behavior of DialA so that it returns a reweight that satisfie
 
 ## Dive into systprovider
 
-Now, let's see where we should implement this.
+Now, let's see where we implement this.
 
 In each systprovider, `GetEventResponse(genie::EventRecord const &ev)` function should be defined.
 This is the function that is called for each GENIE EventRecord, and outputs the reweight object.
 
-In the [first block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L94-L101), we use the event variables to calculate the kinematic variables we want to use to calcualte reweights.
+---
+
+In the first block, we use `genie::ProcessInfo` object to check if the given is CCQE event.
+
+```
+  // Process info
+  genie::ProcessInfo const& procinfo = ev.Summary()->ProcInfo();
+  //------ DDAS Exercise 1-2 START
+  bool IsCC = true;
+  bool IsQE = true;
+  if(!IsCC || !IsQE){
+    // This is a pre-defined function that fills 1.0
+    return this->GetDefaultEventResponse();
+  }
+  //------ DDAS Exercise 1-2 END
+```
+
+## :pencil2: Exercise 1-2
+
+Update `IsCC` and `IsQE` properly. Hint: [genie::ProcessInfo class definition](https://github.com/GENIE-MC/Generator/blob/R-3_06_02/src/Framework/Interaction/ProcessInfo.h)
+
+---
+
+In the next block, we use the event variables to calculate the kinematic variables we want to use to calcualte reweights:
+
+```
+  //------ DDAS Exercise 1-2 START
+  genie::GHepParticle *FSLep = ev.FinalStatePrimaryLepton();
+  genie::GHepParticle *ISLep = ev.Probe();
+
+  TLorentzVector ISLepP4 = *ISLep->P4();
+  TLorentzVector FSLepP4 = *FSLep->P4();
+  double Q2 = 0;
+  //------ DDAS Exercise 1-2 END
+```
 
 - ISLepP4: "I"nitial "S"tate "Lep"ton four-momentum (P4)
   - In a charged-current neutrino interaction, this is for the neutrino
 - FSLepP4: "F"inal "S"tate "Lep"ton four-momentum (P4)
   - In a charged-current neutrino interaction, this is for electron/muon/tau
 
-## :pencil2: Exercise 1-2
+## :pencil2: Exercise 1-3
 
-Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event, and assign the value to `Q2`.
+Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event, and assign the value to `Q2`. Hint: q=(4-momentum transfer), Q2 = -q2
 
 ---
 
-In the [next block](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/systproviders/DUNEDAS2026ExampleReweighter_tool.cc#L103-L124), we
+In the final block, we do the followings:
 1. Check whether a dial is activated
 1. If so, for each dial, loop over its variations, evaluate the reweight, and store it to the output reweight object
 
+```
+  // now make the output
+  // 1) Make an empty object
+  systtools::event_unit_response_t resp;
+  systtools::SystMetaData const &md = GetSystMetaData();
+
+  // If pidx_DialA is found and set from SetupResponseCalculator,
+  // it must be different from systtools::kParamUnhandled<size_t>.
+  // Then we evaluate the reweight for DialA
+  if (pidx_DialA != systtools::kParamUnhandled<size_t>) {
+    resp.push_back( {md[pidx_DialA].systParamId, {}} );
+    for (double var : md[pidx_DialA].paramVariations) {
+      // var is pariations (e.g., -1, 0, 1...)
+      resp.back().responses.push_back( GetReweight_DialA(Q2, var) );
+    }
+  }
+  // Same for DialB
+  if (pidx_DialB != systtools::kParamUnhandled<size_t>) {
+    resp.push_back( {md[pidx_DialB].systParamId, {}} );
+    for (double var : md[pidx_DialB].paramVariations) {
+      resp.back().responses.push_back( GetReweight_DialB(Q2, var) );
+    }
+  }
+
+```
+
 As you can see, `GetReweight_DialA(Q2, var)` is the function that evaluates the reweight for a given `Q2` and a given variation (`var`).
-It is recommended to define all these "calculators" under `src/nusystematics/responsecalculators`.
+It is recommended to define these "calculators" under `src/nusystematics/responsecalculators`.
 
-## :pencil2: Exercise 1-3
+## :pencil2: Exercise 1-4
 
-Implement our "dial design" into `GetReweight_DialA` function:
-[DUNEDAS2026ExampleReweighter_calculator.hh](https://github.com/NuSystematics/nusystematics/blob/DDAS2026/src/nusystematics/responsecalculators/DUNEDAS2026ExampleReweighter_calculator.hh#L10-L14$0)
+Implement our "dial design" into `GetReweight_DialA` function by updating `src/nusystematics/responsecalculators/DUNEDAS2026ExampleReweighter_calculator.hh`:
+
+```
+//------ DDAS Exercise 1-4 START
+inline double GetReweight_DialA(double Q2, double var){
+  return 1.0;
+}
+//------ DDAS Exercise 1-4 END
+```
 
 ## Compile and test
 
