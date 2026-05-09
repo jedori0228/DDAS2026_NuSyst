@@ -141,7 +141,7 @@ This is the function that is called for each GENIE EventRecord, and outputs the 
 
 ---
 
-In the first block, we use `genie::ProcessInfo` object to check if the given is CCQE event.
+In the first block, we use `genie::ProcessInfo` object to check if the given event is CCQE.
 
 ```
   // Process info
@@ -182,7 +182,7 @@ In the next block, we use the event variables to calculate the kinematic variabl
 
 ## :pencil2: Exercise 1-3
 
-Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event, and assign the value to `Q2`. Hint: q=(4-momentum transfer), Q2 = -q2
+Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event and update `Q2`. Hint: q=(4-momentum transfer), Q2 = -q2
 
 ---
 
