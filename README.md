@@ -6,11 +6,17 @@ I am asuuming that you are on SL7 container on dunegpvm
 # In every new terminal session, run below
 
 ```
+# Let's use app directory
+cd /exp/dune/app/users/${USER}
+# Go to your favorite DAS working directory
+# I will create DDAS2026
+mkdir DDAS2026; cd DDAS2026
+
 # Current directory
 export nusystwd=`pwd`
 
 # To use UPS
-source /cvmfs/icarus.opensciencegrid.org/products/icarus/setup_icarus.sh
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 
 # Dependencies
 setup cmake v3_27_4
