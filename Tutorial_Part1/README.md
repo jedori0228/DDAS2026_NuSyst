@@ -105,7 +105,7 @@ We now have ParamterHeader file, so we can run NuSystematics. Various downstream
 ```
 DumpConfiguredTweaksNuSyst -c DDAS.PH.fcl \
 -i <Input ROOT file that contains GENIE tree> \
--o NuSystTree.root \
+-o NuSystTree.root
 ```
 The output ROOT file contains two TTrees;
 - "events": Event tree
@@ -115,7 +115,7 @@ For this tutorial, let's use `/exp/dune/data/users/jskim/DDAS2026/MicroProdN4p1_
 ```
 DumpConfiguredTweaksNuSyst -c DDAS.PH.fcl \
 -i /exp/dune/data/users/jskim/DDAS2026/MicroProdN4p1_NDComplex_FHC.caf.full.spineonly.0002459.CAF.root \
--o NuSystTree.root \
+-o NuSystTree.root
 ```
 
 # Analyzing NuSyst TreeMaker
