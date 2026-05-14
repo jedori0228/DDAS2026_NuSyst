@@ -190,7 +190,7 @@ In the next block, we use the event variables to calculate the kinematic variabl
 
 ## :pencil2: Exercise 1-3
 
-Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event and update `Q2`. Hint: q=(4-momentum transfer), Q2 = -q2
+Using `ISLepP4` and `FSLepP4`, calculate the Q2 of this event and update `Q2`. Hint: q=(4-momentum transfer), Q2 = -q2. Also, look [TLorentzVector::Mag2()](https://root.cern.ch/doc/master/classTLorentzVector.html#abdfc8dd6a830b7324994a65d19b52e97).
 
 ---
 
