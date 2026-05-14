@@ -15,6 +15,9 @@ mkdir DDAS2026; cd DDAS2026
 # Current directory
 export nusystwd=`pwd`
 
+# First, clone this repo
+git clone https://github.com/jedori0228/DDAS2026_NuSyst.git
+
 # To use UPS
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 
