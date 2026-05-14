@@ -29,7 +29,8 @@ DDAS_ToolConfig:{
   OPT_STRING: "A string can be transferred to ParameterHeader"
   OPT_BOOL: false
   OPT_PSET:{
-    OPT_PSET_STRING: "A string inside OPT_PSET"
+    ROOTFileName: "/path/to/ROOTFILE.root"
+    HistName: "HistogramName"
   }
 
 }
